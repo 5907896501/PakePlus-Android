@@ -24,3 +24,4 @@ window.open = function (url, target, features) {
 }
 
 document.addEventListener('click', hookClick, { capture: true })
+document.head.insertAdjacentHTML ('beforeend', '<style>html,body{padding:0;margin:0;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);}</style>')
