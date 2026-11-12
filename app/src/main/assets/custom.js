@@ -25,13 +25,20 @@ window.open = function (url, target, features) {
 
 document.addEventListener('click', hookClick, { capture: true })
 
-// ========== 新增：#FF0029红色状态栏 + 兜底红条 + 左右宽度自适应 ==========
-if (window.Android) {
-    window.Android.setStatusBarColor("#FF0029", true);
-    window.Android.setNavigationBarColor("#FF0029");
+// #FF0029 红色，尝试原生状态栏
+let statusBarOk = false
+if (window.Android && typeof window.Android.setStatusBarColor === 'function') {
+    try {
+        window.Android.setStatusBarColor("#FF0029", true);
+        window.Android.setNavigationBarColor("#FF0029");
+        statusBarOk = true
+    } catch (err) {
+        console.log("原生状态栏接口调用失败")
+    }
 }
+
+// 兜底：生成网页内红条（这个红条在状态栏下面，不是系统时间栏！）
 function buildSafeBar() {
-    // 顶部红条
     const topBar = document.createElement('div');
     topBar.style.cssText = `
         width:100%;
@@ -41,7 +48,6 @@ function buildSafeBar() {
         top:0;left:0;
         z-index:99999;
     `;
-    // 底部红条
     const bottomBar = document.createElement('div');
     bottomBar.style.cssText = `
         width:100%;
@@ -54,7 +60,6 @@ function buildSafeBar() {
     document.body.appendChild(topBar);
     document.body.appendChild(bottomBar);
 
-    // 核心：左右自适应，禁止横向溢出、横向滚动
     document.documentElement.style.width = '100%';
     document.documentElement.style.overflowX = 'hidden';
     document.body.style.width = '100%';
@@ -68,4 +73,3 @@ if (document.readyState === 'loading') {
 } else {
     buildSafeBar();
 }
-
