@@ -24,3 +24,48 @@ window.open = function (url, target, features) {
 }
 
 document.addEventListener('click', hookClick, { capture: true })
+
+// ========== 新增：#FF0029红色状态栏 + 兜底红条 + 左右宽度自适应 ==========
+if (window.Android) {
+    window.Android.setStatusBarColor("#FF0029", true);
+    window.Android.setNavigationBarColor("#FF0029");
+}
+function buildSafeBar() {
+    // 顶部红条
+    const topBar = document.createElement('div');
+    topBar.style.cssText = `
+        width:100%;
+        height:env(safe-area-inset-top);
+        background:#FF0029;
+        position:fixed;
+        top:0;left:0;
+        z-index:99999;
+    `;
+    // 底部红条
+    const bottomBar = document.createElement('div');
+    bottomBar.style.cssText = `
+        width:100%;
+        height:env(safe-area-inset-bottom);
+        background:#FF0029;
+        position:fixed;
+        bottom:0;left:0;
+        z-index:99999;
+    `;
+    document.body.appendChild(topBar);
+    document.body.appendChild(bottomBar);
+
+    // 核心：左右自适应，禁止横向溢出、横向滚动
+    document.documentElement.style.width = '100%';
+    document.documentElement.style.overflowX = 'hidden';
+    document.body.style.width = '100%';
+    document.body.style.overflowX = 'hidden';
+    document.body.style.paddingTop = 'env(safe-area-inset-top)';
+    document.body.style.paddingBottom = 'env(safe-area-inset-bottom)';
+    document.body.style.boxSizing = 'border-box';
+}
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', buildSafeBar);
+} else {
+    buildSafeBar();
+}
+
